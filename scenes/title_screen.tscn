@@ -1,5 +1,25 @@
 [gd_scene format=3 uid="uid://c45c13nudqket"]
 
+[ext_resource type="FontFile" uid="uid://qxsud78kwly7" path="res://fonts/Academy Engraved LET Fonts.ttf" id="1_fgkus"]
+[ext_resource type="Texture2D" uid="uid://dnexywkkjei6u" path="res://textures/Bouncing_ball_strobe_edit.jpg" id="1_s4lrb"]
+[ext_resource type="PackedScene" uid="uid://uksnwyl6plv6" path="res://scenes/character_preview.scn" id="3_s4lrb"]
+[ext_resource type="Script" uid="uid://ch3fs2860ly8u" path="res://scripts/main_world_teleport.gd" id="4_mgrm8"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_sa3yf"]
+font = ExtResource("1_fgkus")
+font_size = 200
+font_color = Color(1, 0.12941177, 0.12941177, 1)
+
+[sub_resource type="FontVariation" id="FontVariation_mgrm8"]
+
+[sub_resource type="FontVariation" id="FontVariation_s4lrb"]
+base_font = SubResource("FontVariation_mgrm8")
+variation_embolden = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s4lrb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mgrm8"]
+
 [node name="TitleScreen" type="Node2D" unique_id=540315210]
 
 [node name="Control" type="Control" parent="." unique_id=1526797973]
@@ -7,17 +27,59 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1155.0
 offset_bottom = 651.0
+scale = Vector2(2, 2)
 
 [node name="TextureRect" type="TextureRect" parent="Control" unique_id=1699056583]
 layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 637.0
+scale = Vector2(1.85, 1.75)
+texture = ExtResource("1_s4lrb")
+expand_mode = 2
 
 [node name="Label" type="Label" parent="Control" unique_id=568031312]
 layout_mode = 0
-offset_left = 99.0
-offset_top = 104.0
-offset_right = 1055.0
-offset_bottom = 301.0
-text = "Lol
+offset_left = 564.0
+offset_top = 136.5
+offset_right = 1529.0
+offset_bottom = 613.5
+text = "MultiH tter
 "
+label_settings = SubResource("LabelSettings_sa3yf")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Control" unique_id=1277079508]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 926.5
+offset_top = 36.0
+offset_right = 926.5
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+stretch = true
+
+[node name="SubViewportContainer#SubViewport" type="SubViewport" parent="Control/SubViewportContainer" unique_id=1891080504]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1155, 651)
+render_target_update_mode = 4
+
+[node name="SubViewport#character_preview" parent="Control/SubViewportContainer/SubViewportContainer#SubViewport" unique_id=-2141405117 instance=ExtResource("3_s4lrb")]
+
+[node name="Button" type="Button" parent="." unique_id=1922991249]
+editor_description = "Button to acces main_world (testing world)"
+custom_minimum_size = Vector2(800, 200)
+offset_left = 1651.0
+offset_top = 676.0
+offset_right = 2451.0
+offset_bottom = 876.0
+theme_override_fonts/font = SubResource("FontVariation_s4lrb")
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_s4lrb")
+theme_override_styles/hover = SubResource("StyleBoxFlat_mgrm8")
+text = "Training mode"
+flat = true
+script = ExtResource("4_mgrm8")

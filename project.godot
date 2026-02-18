@@ -17,8 +17,9 @@ config/icon="res://textures/icon.svg"
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/viewport_width=480
+window/size/viewport_height=360
+window/size/mode=2
 
 [editor]
 
@@ -27,7 +28,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/character-controller/plugin.cfg", "res://addons/mixamo_animation_retargeter/plugin.cfg")
+enabled=PackedStringArray("res://addons/character-controller/plugin.cfg", "res://addons/mixamo_animation_retargeter/plugin.cfg", "res://addons/open_external_editor/plugin.cfg")
 
 [input]
 

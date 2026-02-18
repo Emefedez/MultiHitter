@@ -91,7 +91,7 @@ func _physics_process(delta: float) -> void:
 		velocity += get_gravity() * delta
 		if not is_on_floor() and (JUMP_ANIM_DURATION > 0.0):
 			animation_player.play(jump_anim_name)
-    
+	
 	# Update jump animation timer
 	if jump_anim_timer > 0.0:
 		jump_anim_timer -= delta
