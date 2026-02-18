@@ -4,7 +4,7 @@ Basic Game Template, intended for Simple Gameplay
 ## Cosas a Arreglar:
 
 --> La sombra ahora se renderiza demasiado abajo, debo ajustarla para que sea visible
---> Más formas de acelerar, como poder rebotar de una pared
+\n--> Más formas de acelerar, como poder rebotar de una pared
 
 **--> Y mucho más...**
 
