@@ -15,6 +15,11 @@ run/main_scene="uid://c05x57bdpx7pl"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://textures/icon.svg"
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
@@ -75,3 +80,5 @@ move_fly_mode={
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+global_illumination/gi/use_half_resolution=true
+anti_aliasing/screen_space_roughness_limiter/enabled=false
