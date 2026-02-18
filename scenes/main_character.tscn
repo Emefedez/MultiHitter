@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://c5prmaad4nkif"]
+[gd_scene format=3 uid="uid://bqwp167qwbgge"]
 
 [ext_resource type="Script" uid="uid://drm01f1powlw4" path="res://scripts/main_character_movement.gd" id="1_48ufq"]
-[ext_resource type="PackedScene" uid="uid://cx53poqrwbqdl" path="res://3d_models/MainDude.fbx" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://8m1suueqa5hk" path="res://3d_models/MainDude.fbx" id="2_model"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_col"]
 radius = 0.35
@@ -18,7 +18,7 @@ script = ExtResource("1_48ufq")
 
 [node name="CharacterModel" type="Node3D" parent="." unique_id=828853083]
 
-[node name="MainDude" parent="CharacterModel" unique_id=487025721 instance=ExtResource("2_model")]
+[node name="MainDude" parent="CharacterModel" unique_id=56541351 instance=ExtResource("2_model")]
 transform = Transform3D(-95.82627, 0, -28.588917, 0, 100, 0, 28.588917, 0, -95.82627, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2036088277]
