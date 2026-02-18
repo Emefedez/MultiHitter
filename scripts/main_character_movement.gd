@@ -10,6 +10,15 @@ const MOUSE_SENSITIVITY = 0.003
 @onready var camera: Camera3D = $CameraPivot/Camera3D
 @onready var character_model: Node3D = $CharacterModel
 
+# Animation helpers
+var animation_playing: bool = false
+var roll_anim_timer: float = 0.0
+var roll_velocity: Vector3 = Vector3.ZERO
+
+# roll movement (scripted root motion replacement)
+@export var roll_speed: float = 8.0    # horizontal speed applied while rolling (tweak in Inspector)
+
+
 # --- JUMP ANIMATION LOCKOUT ---
 var jump_anim_timer: float = 0.0
 const JUMP_ANIM_DURATION = 1.75 # seconds, adjust as needed
@@ -24,6 +33,8 @@ const JUMP_ANIM_DURATION = 1.75 # seconds, adjust as needed
 @export var idle_anim_name: String = "idle"
 ## Name for jump animation
 @export var jump_anim_name: String = "jump"
+## Name for diveroll animation
+@export var diveroll_anim_name: String = "diveroll"
 
 # DEBUG FUNCTION - Prints all available animations in the assigned AnimationPlayer
 
@@ -32,12 +43,12 @@ func _debug_print_animations() -> void:
 		var anims = animation_player.get_animation_list()
 		print("[Character] Available animations: ", anims)
 		# Try to help the user if defaults are wrong
-		if not anims.has(walk_anim_name):
-			print("[Character] WARNING: Configured walk animation '" + walk_anim_name + "' not found in list.")
-			if anims.has("mixamo_com"):
-				print("[Character] TIP: Found 'mixamo_com'. You might want to rename it or change the Walk Anim Name setting.")
-		if not anims.has(jump_anim_name):
-			print("[Character] WARNING: Configured jump animation '" + jump_anim_name + "' not found in list.")
+		if anims.has("mixamo_com"):
+			print("[Character] TIP: Found 'mixamo_com'. You might want to rename it or change the Walk Anim Name setting.")
+		# Check diveroll presence and give quick guidance
+		if not diveroll_anim_name.is_empty() and not anims.has(diveroll_anim_name):
+			print("[Character] NOTE: diveroll_anim_name ('%s') not present in AnimationPlayer." % diveroll_anim_name)
+
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -51,6 +62,9 @@ func _ready() -> void:
 			_debug_print_animations()
 		else:
 			push_warning("[Character] No AnimationPlayer found! Assign it in the Inspector or check your model.")
+	else:
+		# If animation_player was manually assigned, print its animations for debugging
+		_debug_print_animations()
 
 ## Handle mouse look and cursor toggle
 func _unhandled_input(event: InputEvent) -> void:
@@ -73,17 +87,16 @@ func _physics_process(delta: float) -> void:
 		velocity.y = JUMP_VELOCITY
 		jump_anim_timer = JUMP_ANIM_DURATION
 
-	if not is_on_floor():
+	if not is_on_floor() and (roll_anim_timer==0.0):
 		velocity += get_gravity() * delta
-		if not is_on_floor() and (JUMP_ANIM_DURATION> 0.0):
+		if not is_on_floor() and (JUMP_ANIM_DURATION > 0.0):
 			animation_player.play(jump_anim_name)
-	
-
+    
 	# Update jump animation timer
 	if jump_anim_timer > 0.0:
 		jump_anim_timer -= delta
 
-	if is_on_floor() and (jump_anim_timer<(JUMP_ANIM_DURATION-1)):
+	if is_on_floor() and (jump_anim_timer < (JUMP_ANIM_DURATION - 1)):
 		jump_anim_timer = 0.0
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
@@ -93,36 +106,75 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("move_sprint"):
 		current_speed = SPRINT_SPEED
 
-	# Only play walk/idle if not in jump animation lockout
-	if jump_anim_timer <= 0.0: #if not in jump animation lockout
-		if direction: #choose direction
-			velocity.x = direction.x * current_speed 
-			velocity.z = direction.z * current_speed
-			_play_animation(walk_anim_name)
-		else: #smoothly decelerate to stop when no input
-			velocity.x = move_toward(velocity.x, 0, current_speed) 
-			velocity.z = move_toward(velocity.z, 0, current_speed)
-			if not idle_anim_name.is_empty(): 
-				_play_animation(idle_anim_name)
-			elif animation_player and animation_player.is_playing():
-				animation_player.stop()
-	else:
-		# Still update velocity, but don't override jump animation
-		if direction:
-			velocity.x = direction.x * current_speed
-			velocity.z = direction.z * current_speed
-		else:
-			velocity.x = move_toward(velocity.x, 0, current_speed)
-			velocity.z = move_toward(velocity.z, 0, current_speed)
+	if Input.is_action_just_pressed("move_crouch") and not animation_playing and roll_anim_timer <= 0.0:
+		_start_diveroll(direction)
 
+	if roll_anim_timer > 0.0:
+		roll_anim_timer -= delta
+		if roll_anim_timer <= 0.0:
+			roll_anim_timer = 0.0
+			animation_playing = false
+			roll_velocity = Vector3.ZERO
+		velocity.x = roll_velocity.x
+		velocity.z = roll_velocity.z
+	else:
+		# Only play walk/idle if not in jump animation lockout
+		if jump_anim_timer <= 0.0:
+			if direction and (!animation_playing):
+				velocity.x = direction.x * current_speed 
+				velocity.z = direction.z * current_speed
+				animation_player.play(walk_anim_name)
+			else:
+				velocity.x = move_toward(velocity.x, 0, current_speed) 
+				velocity.z = move_toward(velocity.z, 0, current_speed)
+				if not idle_anim_name.is_empty(): 
+					animation_player.play(idle_anim_name)
+				elif animation_player and animation_player.is_playing():
+					animation_player.stop()
+		else:
+			# Still update velocity, but don't override jump animation
+			if direction:
+				velocity.x = direction.x * current_speed
+				velocity.z = direction.z * current_speed
+			else:
+				velocity.x = move_toward(velocity.x, 0, current_speed)
+				velocity.z = move_toward(velocity.z, 0, current_speed)
+
+	# finally, apply physics movement
 	move_and_slide()
 
-func _play_animation(anim_name: String) -> void: 
-		if animation_player.has_animation(anim_name):
-			if animation_player.current_animation != anim_name:
-				animation_player.play(anim_name)
-		else:
-			# Prevent spamming errors every frame
-			if Engine.get_process_frames() % 60 == 0: 
-				printerr("[Character] Missing animation: ", anim_name)
+func _start_diveroll(direction: Vector3) -> void:
+	if animation_player == null:
+		push_warning("[Character] Cannot play diveroll: no AnimationPlayer assigned.")
+		return
 
+	if diveroll_anim_name.is_empty():
+		push_warning("[Character] Diveroll animation name is empty; assign one in Inspector.")
+		return
+
+	if not animation_player.has_animation(diveroll_anim_name):
+		push_warning("[Character] Diveroll '%s' not found on AnimationPlayer." % diveroll_anim_name)
+		return
+
+	var anim = animation_player.get_animation(diveroll_anim_name)
+	var anim_len = anim.length if anim else 0.0
+	var track_count = anim.get_track_count() if anim else 0
+
+	if anim_len <= 0.0 or track_count == 0:
+		push_warning("[Character] Diveroll '%s' has length=%.3f tracks=%d — skipping." % [diveroll_anim_name, anim_len, track_count])
+		return
+
+	animation_playing = true
+	animation_player.play(diveroll_anim_name)
+	roll_anim_timer = anim_len
+	roll_velocity = _compute_roll_velocity(direction)
+	velocity.x = roll_velocity.x
+	velocity.z = roll_velocity.z
+	print("[Character] Playing diveroll '%s' (len=%.3f, tracks=%d) roll_vel=%s" % [diveroll_anim_name, anim_len, track_count, str(roll_velocity)])
+
+func _compute_roll_velocity(direction: Vector3) -> Vector3:
+	var horizontal = Vector3(direction.x, 0, direction.z)
+	if horizontal.length() > 0.1:
+		return horizontal.normalized() * roll_speed
+	var forward = (transform.basis * Vector3(0, 0, 1)).normalized()
+	return Vector3(forward.x, 0, forward.z).normalized() * roll_speed
