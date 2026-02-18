@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://c45c13nudqket"]
+
+[node name="TitleScreen" type="Node2D" unique_id=540315210]
+
+[node name="Control" type="Control" parent="." unique_id=1526797973]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1155.0
+offset_bottom = 651.0
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=1699056583]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 637.0
+
+[node name="Label" type="Label" parent="Control" unique_id=568031312]
+layout_mode = 0
+offset_left = 99.0
+offset_top = 104.0
+offset_right = 1055.0
+offset_bottom = 301.0
+text = "Lol
+"

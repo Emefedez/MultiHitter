@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://c05x57bdpx7pl"]
+
+[ext_resource type="Texture2D" uid="uid://ca1ebdnw70bme" path="res://textures/shadowdrop1.png" id="1_bdp8l"]
+[ext_resource type="Script" uid="uid://cjt6m6ay84qd0" path="res://scripts/shadowfollower.gd" id="2_jj0au"]
+[ext_resource type="PackedScene" uid="uid://c5prmaad4nkif" path="res://scenes/main_character.tscn" id="3_wy0bs"]
+[ext_resource type="Texture2D" uid="uid://cbi0nmbudbmcl" path="res://textures/prototype_textures/PNG/Light/texture_07.png" id="4_emumq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uoqbt"]
+albedo_texture = ExtResource("4_emumq")
+
+[node name="MainWorld" type="Node3D" unique_id=1741817314]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=198563251]
+transform = Transform3D(1, 0, 0, 0, 0.86088413, 0.50880104, 0, -0.50880104, 0.86088413, 0, 11.9924345, -0.84488964)
+light_energy = 1.19
+
+[node name="shadowfollower" type="Sprite3D" parent="." unique_id=1153562179 node_paths=PackedStringArray("character")]
+transform = Transform3D(0.28095308, 0, 0, 0, 0.004685477, -0.981101, 0, 0.25662354, 0.017913109, 0, 1.241704, -3.1531773)
+texture = ExtResource("1_bdp8l")
+script = ExtResource("2_jj0au")
+character = NodePath("../player")
+
+[node name="player" parent="." unique_id=756318252 instance=ExtResource("3_wy0bs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2609586, -3.542204)
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=1283403792]
+use_collision = true
+
+[node name="suelo" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1914739283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.498613, 0.721293, -1.4528131)
+size = Vector3(20.064941, 1, 21.58667)
+material = SubResource("StandardMaterial3D_uoqbt")
+
+[node name="pilar" type="CSGCylinder3D" parent="CSGCombiner3D/suelo" unique_id=2117583791]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.026200294, 2.9124012, -1.7309504)
+radius = 1.6103516
+height = 5.1796875
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D/suelo/pilar" unique_id=178519086]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8059082, -2.024095, -1.0981445)
+size = Vector3(2.6118164, 0.26757813, 3.196289)
+
+[node name="puerta" type="CSGBox3D" parent="CSGCombiner3D/suelo" unique_id=1816376267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26660156, 2.767048, 6.110947)
+size = Vector3(0.46679688, 4.531128, 4.9868164)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGCombiner3D/suelo/puerta" unique_id=505086147]
+transform = Transform3D(-0.014468282, 0.99989545, 0, -0.99989545, -0.014468282, 0, 0, 0, 1, 0.21744823, -1.3313813, -0.07084608)
+operation = 2
+radius = 1.9086914
+height = 3.2509766

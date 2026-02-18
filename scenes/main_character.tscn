@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://c5prmaad4nkif"]
+
+[ext_resource type="Script" uid="uid://drm01f1powlw4" path="res://scripts/main_character_movement.gd" id="1_48ufq"]
+[ext_resource type="PackedScene" uid="uid://cx53poqrwbqdl" path="res://3d_models/MainDude.fbx" id="2_model"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_col"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="Environment" id="Environment_wmkwl"]
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_wmkwl"]
+
+[sub_resource type="Compositor" id="Compositor_uvl38"]
+
+[node name="player" type="CharacterBody3D" unique_id=971715621]
+script = ExtResource("1_48ufq")
+
+[node name="CharacterModel" type="Node3D" parent="." unique_id=828853083]
+
+[node name="MainDude" parent="CharacterModel" unique_id=487025721 instance=ExtResource("2_model")]
+transform = Transform3D(-95.82627, 0, -28.588917, 0, 100, 0, 28.588917, 0, -95.82627, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2036088277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_col")
+
+[node name="CameraPivot" type="Node3D" parent="." unique_id=1866799429]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot" unique_id=2131243850]
+transform = Transform3D(1, 0, 0, 0, 0.97667605, 0.21471828, 0, -0.21471828, 0.97667605, 0.5, 0.26995718, 1.1571734)
+environment = SubResource("Environment_wmkwl")
+attributes = SubResource("CameraAttributesPhysical_wmkwl")
+compositor = SubResource("Compositor_uvl38")
