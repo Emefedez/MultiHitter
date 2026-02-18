@@ -9,7 +9,7 @@ uniform float Levels : hint_range(0.0, 100.0, 1.0);
 
 void vertex() {
 	// Called for every vertex the material is visible on.
-	POSITION = vec4(VERTEX.xy 1.0,1.0);
+	POSITION = vec4(VERTEX.xy, 1.0, 1.0);
 }
 
 void fragment() {
@@ -22,13 +22,13 @@ void fragment() {
 	
 	float grayscale = max(color.r, max(color.g, color.b)) ;
 
-	float lower = floor(grayscale * levels) / levels;
-	float higher = ceil(grayscale * levels) / levels;
+	float lower = floor(grayscale * Levels) / Levels;
+	float higher = ceil(grayscale * Levels) / Levels;
 
 	float lower_diff = abs(lower - grayscale);
 	float higher_diff = abs(higher - grayscale);
 
-	float level = lower_diff < higher_diff ? Lower : higher;
+	float level = lower_diff < higher_diff ? lower : higher;
 	float adjustment = level/grayscale;
 
 	color.rgb *= adjustment;

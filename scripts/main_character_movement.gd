@@ -36,35 +36,52 @@ const JUMP_ANIM_DURATION = 1.75 # seconds, adjust as needed
 ## Name for diveroll animation
 @export var diveroll_anim_name: String = "diveroll"
 
-# DEBUG FUNCTION - Prints all available animations in the assigned AnimationPlayer
+@export_group("Debug UI")
+## Toggle the speed display on/off
+@export var show_speed_ui: bool = true
+## Optional: Assign an existing Label node from the scene to use instead of generating one
+@export var custom_speed_label: Label
 
-func _debug_print_animations() -> void:
-	if animation_player:
-		var anims = animation_player.get_animation_list()
-		print("[Character] Available animations: ", anims)
-		# Try to help the user if defaults are wrong
-		if anims.has("mixamo_com"):
-			print("[Character] TIP: Found 'mixamo_com'. You might want to rename it or change the Walk Anim Name setting.")
-		# Check diveroll presence and give quick guidance
-		if not diveroll_anim_name.is_empty() and not anims.has(diveroll_anim_name):
-			print("[Character] NOTE: diveroll_anim_name ('%s') not present in AnimationPlayer." % diveroll_anim_name)
-
+# GUI Elements
+var _setup_ui_layer: CanvasLayer
+var _speed_label: Label
 
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
-	# Auto-find AnimationPlayer if not assigned manually
-	if animation_player == null:
+	_setup_animation_player()
+	if show_speed_ui:
+		_setup_speed_ui()
+
+func _setup_animation_player() -> void:
+	if not animation_player:
 		var players = character_model.find_children("*", "AnimationPlayer", true, false)
 		if players.size() > 0:
 			animation_player = players[0] as AnimationPlayer
-			print("[Character] Auto-found AnimationPlayer: ", animation_player.name)
-			_debug_print_animations()
-		else:
-			push_warning("[Character] No AnimationPlayer found! Assign it in the Inspector or check your model.")
-	else:
-		# If animation_player was manually assigned, print its animations for debugging
-		_debug_print_animations()
+
+func _setup_speed_ui() -> void:
+	# 1. If user assigned a custom label in the Inspector, use it
+	if custom_speed_label:
+		_speed_label = custom_speed_label
+		return
+
+	# 2. Otherwise, generate a simple default UI
+	# Clean up any existing attempts if necessary
+	if _setup_ui_layer: _setup_ui_layer.queue_free()
+	
+	# Create a CanvasLayer to ensure UI draws above everything (including shaders)
+	_setup_ui_layer = CanvasLayer.new()
+	_setup_ui_layer.name = "SpeedUI"
+	add_child(_setup_ui_layer)
+	
+	# Create the Label
+	_speed_label = Label.new()
+	_speed_label.name = "SpeedLabel"
+	_speed_label.position = Vector2(20, 20) # Top-left corner
+	_speed_label.modulate = Color(1, 1, 0) # Yellow text
+	# Add a simple outline for readability
+	_speed_label.add_theme_constant_override("outline_size", 6)
+	_speed_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	_setup_ui_layer.add_child(_speed_label)
 
 ## Handle mouse look and cursor toggle
 func _unhandled_input(event: InputEvent) -> void:
@@ -142,39 +159,27 @@ func _physics_process(delta: float) -> void:
 
 	# finally, apply physics movement
 	move_and_slide()
+	
+	# Update GUI with speed
+	if _speed_label:
+		var horizontal_speed = Vector3(velocity.x, 0, velocity.z).length()
+		_speed_label.text = "Speed: %.2f m/s" % horizontal_speed
 
 func _start_diveroll(direction: Vector3) -> void:
-	if animation_player == null:
-		push_warning("[Character] Cannot play diveroll: no AnimationPlayer assigned.")
-		return
-
-	if diveroll_anim_name.is_empty():
-		push_warning("[Character] Diveroll animation name is empty; assign one in Inspector.")
-		return
-
-	if not animation_player.has_animation(diveroll_anim_name):
-		push_warning("[Character] Diveroll '%s' not found on AnimationPlayer." % diveroll_anim_name)
+	if not animation_player or not animation_player.has_animation(diveroll_anim_name):
 		return
 
 	var anim = animation_player.get_animation(diveroll_anim_name)
-	var anim_len = anim.length if anim else 0.0
-	var track_count = anim.get_track_count() if anim else 0
-
-	if anim_len <= 0.0 or track_count == 0:
-		push_warning("[Character] Diveroll '%s' has length=%.3f tracks=%d — skipping." % [diveroll_anim_name, anim_len, track_count])
-		return
+	if anim.length <= 0.0: return
 
 	animation_playing = true
 	animation_player.play(diveroll_anim_name)
-	roll_anim_timer = anim_len
+	roll_anim_timer = anim.length
 	roll_velocity = _compute_roll_velocity(direction)
 	velocity.x = roll_velocity.x
 	velocity.z = roll_velocity.z
-	print("[Character] Playing diveroll '%s' (len=%.3f, tracks=%d) roll_vel=%s" % [diveroll_anim_name, anim_len, track_count, str(roll_velocity)])
 
 func _compute_roll_velocity(direction: Vector3) -> Vector3:
 	var horizontal = Vector3(direction.x, 0, direction.z)
-	if horizontal.length() > 0.1:
-		return horizontal.normalized() * roll_speed
-	var forward = (transform.basis * Vector3(0, 0, 1)).normalized()
-	return Vector3(forward.x, 0, forward.z).normalized() * roll_speed
+	var vel_dir = horizontal.normalized() if horizontal.length() > 0.1 else (transform.basis * Vector3.BACK).normalized()
+	return Vector3(vel_dir.x, 0, vel_dir.z).normalized() * roll_speed
