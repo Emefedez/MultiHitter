@@ -1,4 +1,7 @@
 Basic Game Template, intended for Simple Gameplay
 
 
-https://github.com/user-attachments/assets/66c0779c-96c7-4844-9e86-d9edcf92d76b
+
+
+https://github.com/user-attachments/assets/f6356e96-bb0f-45f5-87f1-b008e4ba76e9
+
