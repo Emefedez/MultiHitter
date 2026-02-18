@@ -67,18 +67,24 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not is_on_floor():
-		velocity += get_gravity() * delta
 
-	# Handle jump
 	if Input.is_action_just_pressed("move_jump") and is_on_floor():
 		animation_player.play(jump_anim_name)
 		velocity.y = JUMP_VELOCITY
 		jump_anim_timer = JUMP_ANIM_DURATION
 
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+		if not is_on_floor() and (JUMP_ANIM_DURATION> 0.0):
+			animation_player.play(jump_anim_name)
+	
+
 	# Update jump animation timer
 	if jump_anim_timer > 0.0:
 		jump_anim_timer -= delta
+
+	if is_on_floor() and (jump_anim_timer<(JUMP_ANIM_DURATION-1)):
+		jump_anim_timer = 0.0
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()

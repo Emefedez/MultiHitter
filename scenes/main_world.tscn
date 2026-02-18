@@ -27,8 +27,8 @@ character = NodePath("../player")
 use_collision = true
 
 [node name="suelo" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1914739283]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.498613, 0.721293, -1.4528131)
-size = Vector3(20.064941, 1, 21.58667)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0285478, 0.721293, -1.4528131)
+size = Vector3(33.119263, 1, 21.58667)
 material = SubResource("StandardMaterial3D_uoqbt")
 
 [node name="pilar" type="CSGCylinder3D" parent="CSGCombiner3D/suelo" unique_id=2117583791]
@@ -37,11 +37,15 @@ radius = 1.6103516
 height = 5.1796875
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D/suelo/pilar" unique_id=178519086]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8059082, -2.024095, -1.0981445)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8059082, -1.6736727, -1.0981445)
+size = Vector3(2.6118164, 0.26757813, 3.196289)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="CSGCombiner3D/suelo/pilar/CSGBox3D" unique_id=1494394606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9847198, 0.5263648, 0.051297665)
 size = Vector3(2.6118164, 0.26757813, 3.196289)
 
 [node name="puerta" type="CSGBox3D" parent="CSGCombiner3D/suelo" unique_id=1816376267]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26660156, 2.767048, 6.110947)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.801177, 2.767048, 0.289783)
 size = Vector3(0.46679688, 4.531128, 4.9868164)
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="CSGCombiner3D/suelo/puerta" unique_id=505086147]
