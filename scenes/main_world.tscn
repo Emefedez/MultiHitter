@@ -4,9 +4,23 @@
 [ext_resource type="Script" uid="uid://cjt6m6ay84qd0" path="res://scripts/shadowfollower.gd" id="2_jj0au"]
 [ext_resource type="PackedScene" uid="uid://cxevogv8v1wxx" path="res://scenes/GlobalMainCharacter.scn" id="3_new_char"]
 [ext_resource type="Texture2D" uid="uid://cbi0nmbudbmcl" path="res://textures/prototype_textures/PNG/Light/texture_07.png" id="4_emumq"]
+[ext_resource type="Shader" uid="uid://dqagukb0evefc" path="res://shaders/overlay.gdshader" id="5_overl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uoqbt"]
 albedo_texture = ExtResource("4_emumq")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_overlay"]
+shader = ExtResource("5_overl")
+shader_parameter/resolution_x = 160
+shader_parameter/resolution_y = 120
+shader_parameter/color_bit_depth = 4
+shader_parameter/dither_strength = 0.01
+shader_parameter/jitter_amount = 0.002
+shader_parameter/jitter_speed = 1.2
+shader_parameter/jitter_frequency = 180.0
+shader_parameter/chromatic_aberration_strength = 0.0
+shader_parameter/vignette_strength = 0.8
+shader_parameter/vignette_radius = 0.9
 
 [node name="MainWorld" type="Node3D" unique_id=1741817314]
 
@@ -16,11 +30,6 @@ light_energy = 1.19
 
 [node name="player" parent="." unique_id=298327587 instance=ExtResource("3_new_char")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4371645, 0)
-roll_speed = 8.0
-walk_anim_name = "walking"
-idle_anim_name = "idle"
-jump_anim_name = "jump"
-diveroll_anim_name = "diveroll"
 
 [node name="shadowfollower" type="Sprite3D" parent="." unique_id=1153562179 node_paths=PackedStringArray("character")]
 transform = Transform3D(0.28095308, 0, 0, 0, 0.004685477, -0.981101, 0, 0.25662354, 0.017913109, 0, 1.6677372, -0.12299919)
@@ -58,3 +67,15 @@ transform = Transform3D(-0.014468282, 0.99989545, 0, -0.99989545, -0.014468282, 
 operation = 2
 radius = 1.9086914
 height = 3.2509766
+
+[node name="OverlayLayer" type="CanvasLayer" parent="." unique_id=2026021901]
+layer = 10
+
+[node name="OverlayRect" type="ColorRect" parent="OverlayLayer" unique_id=2026021902]
+material = SubResource("ShaderMaterial_overlay")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
