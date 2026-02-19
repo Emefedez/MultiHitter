@@ -30,6 +30,12 @@ light_energy = 1.19
 
 [node name="player" parent="." unique_id=298327587 instance=ExtResource("3_new_char")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4371645, 0)
+roll_speed = null
+walk_anim_name = null
+idle_anim_name = null
+jump_anim_name = null
+diveroll_anim_name = null
+show_speed_ui = null
 
 [node name="shadowfollower" type="Sprite3D" parent="." unique_id=1153562179 node_paths=PackedStringArray("character")]
 transform = Transform3D(0.28095308, 0, 0, 0, 0.004685477, -0.981101, 0, 0.25662354, 0.017913109, 0, 1.6677372, -0.12299919)

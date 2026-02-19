@@ -43,6 +43,7 @@ const JUMP_ANIM_DURATION = 1.75 # seconds, adjust as needed
 @export var custom_speed_label: Label
 
 # GUI Elements
+const SPEED_UI_CANVAS_LAYER: int = 20
 var _setup_ui_layer: CanvasLayer
 var _speed_label: Label
 
@@ -62,6 +63,29 @@ func _setup_speed_ui() -> void:
 	# 1. If user assigned a custom label in the Inspector, use it
 	if custom_speed_label:
 		_speed_label = custom_speed_label
+		# Ensure a CanvasLayer ancestor exists and sits above the overlay shader so the label is not sampled
+		var node = _speed_label
+		var canvas_ancestor: CanvasLayer = null
+		while node:
+			if node is CanvasLayer:
+				canvas_ancestor = node
+				break
+			node = node.get_parent()
+		if canvas_ancestor:
+			if canvas_ancestor.layer < SPEED_UI_CANVAS_LAYER:
+				canvas_ancestor.layer = SPEED_UI_CANVAS_LAYER
+		else:
+			# Wrap the custom label in a new CanvasLayer (keeps it on top of the overlay)
+			var wrapper := CanvasLayer.new()
+			wrapper.name = "SpeedUIWrapper"
+			wrapper.layer = SPEED_UI_CANVAS_LAYER
+			var old_parent = _speed_label.get_parent()
+			if old_parent:
+				old_parent.remove_child(_speed_label)
+			wrapper.add_child(_speed_label)
+			# attach wrapper to the current scene root so it participates in 2D drawing
+			if get_tree().current_scene:
+				get_tree().current_scene.add_child(wrapper)
 		return
 
 	# 2. Otherwise, generate a simple default UI
@@ -71,6 +95,7 @@ func _setup_speed_ui() -> void:
 	# Create a CanvasLayer to ensure UI draws above everything (including shaders)
 	_setup_ui_layer = CanvasLayer.new()
 	_setup_ui_layer.name = "SpeedUI"
+	_setup_ui_layer.layer = SPEED_UI_CANVAS_LAYER
 	add_child(_setup_ui_layer)
 	
 	# Create the Label
