@@ -11,9 +11,9 @@ albedo_texture = ExtResource("4_emumq")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_overlay"]
 shader = ExtResource("5_overl")
-shader_parameter/resolution_x = 160
-shader_parameter/resolution_y = 120
-shader_parameter/color_bit_depth = 4
+shader_parameter/resolution_x = 480
+shader_parameter/resolution_y = 360
+shader_parameter/color_bit_depth = 5
 shader_parameter/dither_strength = 0.01
 shader_parameter/jitter_amount = 0.002
 shader_parameter/jitter_speed = 1.2
